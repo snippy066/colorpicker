@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState,useEffect, useCallback } from 'react'
 import { Card, Form, FormLayout, TextField, Button, ColorPicker, Layout } from '@shopify/polaris'
 import '../index.css';
 
@@ -13,14 +13,35 @@ function Home() {
     const [res, setRes] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
+    var [cl,setCl]=useState([]);
+
+    function hsvTohsl(h, s, v,a) {
+        var l = (2 - s) * v / 2;
+        if (l !== 0) {
+            if (l === 1) {
+                s = 0;
+            } else if (l < 0.5) {
+                s = s * v / (l * 2);
+            } else {
+                s = s * v / (2 - l * 2);
+            }
+        }
+        setCl([h,s,l,a]);
+    }
+
     const handleQuoteChange = useCallback((value) => {
         setRes('')
-        setQuote(value)
+        setQuote(value);
     }, []);
 
+    useEffect(() => {
+       // console.log("inside use effect");
+        hsvTohsl(color.hue, color.saturation, color.brightness,color.alpha);
+      },[color]);
+     
     const cUrl = window.location.href.toString()
     const serverUrl = cUrl.substr(0, cUrl.length - 1)
-    // const serverUrl = 'http://localhost:2525'
+
 
     const onFormSubmit = ev => {
         setRes('')
@@ -81,7 +102,7 @@ function Home() {
                             <Card title="Real Time View">
                                 <Card.Section>
                                     <div className="realtimeview flex justify-center items-center overflow-hidden">
-                                        <span className="typedQuote" style={{ color: `hsla(${color.hue}, ${color.saturation * 100}%, ${color.brightness * 100}%, ${color.alpha})` }} >{quote}</span>
+                                        <span className="typedQuote" style={{ color: `hsla(${cl[0]}, ${cl[1] * 100}%, ${cl[2] * 100}%, ${cl[3]})` }} >{quote}</span>
                                     </div>
                                 </Card.Section>
                             </Card>
@@ -90,7 +111,7 @@ function Home() {
                         <Layout.Section oneThird>
                             <Card title="Generated Image">
                                 <Card.Section>
-                                    <img src={res.image} style={{ width: '100%', marginBottom: '10px' }} />
+                                    <img src={res.image} style={{ width: '100%', marginBottom: '10px' }} alt="pic" />
                                     <Button onClick={() => window.open(`${serverUrl}/${res.imgPath}.png`, '_blank')} primary>Download PNG</Button>
                                 </Card.Section>
                             </Card>
