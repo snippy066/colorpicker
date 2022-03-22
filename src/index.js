@@ -8,7 +8,7 @@ import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppProvider i18n={en} theme={{colorScheme: "light"}}>
+    <AppProvider i18n={en} theme={{colorScheme: "light"}} >
     <App />
     </AppProvider>
   </React.StrictMode>,
